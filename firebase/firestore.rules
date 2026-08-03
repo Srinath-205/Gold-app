@@ -1,0 +1,66 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function signedIn() {
+      return request.auth != null;
+    }
+
+    function userPath() {
+      return /databases/$(database)/documents/users/$(request.auth.uid);
+    }
+
+    function hasUserProfile() {
+      return signedIn() && exists(userPath());
+    }
+
+    function userProfile() {
+      return get(userPath());
+    }
+
+    function isActiveUser() {
+      return hasUserProfile() && userProfile().data.active == true;
+    }
+
+    function isOwner() {
+      return isActiveUser() && userProfile().data.role == 'owner';
+    }
+
+    function isLinkedToBusiness(businessId) {
+      return isActiveUser() && (
+        userProfile().data.businessId == businessId ||
+        (
+          userProfile().data.businessIds is list &&
+          businessId in userProfile().data.businessIds
+        )
+      );
+    }
+
+    match /users/{userId} {
+      allow read: if signedIn() && (request.auth.uid == userId || isOwner());
+      allow create, update, delete: if isOwner();
+    }
+
+    match /businesses/{businessId} {
+      allow read: if isOwner() && isLinkedToBusiness(businessId);
+      allow create: if isOwner();
+      allow update, delete: if isOwner() && isLinkedToBusiness(businessId);
+
+      match /customers/{customerId} {
+        allow read, create, update, delete: if isOwner() && isLinkedToBusiness(businessId);
+      }
+
+      match /bills/{billId} {
+        allow read, create, update, delete: if isOwner() && isLinkedToBusiness(businessId);
+      }
+
+      match /stock/{stockId} {
+        allow read, create, update, delete: if isOwner() && isLinkedToBusiness(businessId);
+      }
+
+      match /releases/{releaseId} {
+        allow read, create, update, delete: if isOwner() && isLinkedToBusiness(businessId);
+      }
+    }
+  }
+}

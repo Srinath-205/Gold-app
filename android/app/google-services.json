@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "858605904279",
+    "project_id": "psm-jewellers",
+    "storage_bucket": "psm-jewellers.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:858605904279:android:59871ade32bd78d85d24d2",
+        "android_client_info": {
+          "package_name": "com.psmjewellers.psm_jewellers_app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAs4zEvEp7nGmaghFqtS6hgAe9WC0fEdO0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
